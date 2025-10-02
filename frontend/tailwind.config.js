@@ -4,7 +4,12 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",   // ✅ all JSX/TSX files included
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+        'dancing-script': ['Dancing Script', 'cursive'],
+      },
+    },
   },
   plugins: [],
 }
