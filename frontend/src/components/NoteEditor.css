@@ -1,0 +1,18 @@
+.quill {
+  border: none !important;
+}
+
+.quill .ql-toolbar {
+  border: none !important;
+  border-bottom: 1px solid #e0e0e0 !important; /* Optional: keep a subtle separator */
+  margin-bottom: 1rem;
+}
+
+.quill .ql-container {
+  border: none !important;
+}
+
+.quill .ql-editor {
+  min-height: 200px;
+  padding: 0;
+}
