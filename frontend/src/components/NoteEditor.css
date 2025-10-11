@@ -1,11 +1,15 @@
+/* Base styles */
 .quill {
   border: none !important;
 }
 
 .quill .ql-toolbar {
   border: none !important;
-  border-bottom: 1px solid #e0e0e0 !important; /* Optional: keep a subtle separator */
-  margin-bottom: 1rem;
+  border-bottom: 1px solid #e0e0e0 !important;
+  margin-bottom: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
 }
 
 .quill .ql-container {
@@ -13,6 +17,57 @@
 }
 
 .quill .ql-editor {
-  min-height: 200px;
-  padding: 0;
+  min-height: 220px;
+  font-size: 15px;
+  line-height: 1.6;
+  padding: 8px;
+}
+
+/* Smooth modal entry */
+.modal-enter {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: all 0.2s ease-out;
+}
+
+.modal-enter-active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Save button */
+.save-btn {
+  transition: all 0.25s ease;
+}
+
+/* 🧠 Responsive Tweaks for Mobile */
+@media (max-width: 640px) {
+  .note-editor {
+    padding: 0.75rem !important;
+    border-radius: 0.75rem;
+  }
+
+  .quill .ql-toolbar {
+    font-size: 12px;
+    padding: 6px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .quill .ql-toolbar button {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+  }
+
+  .quill .ql-editor {
+    min-height: 120px !important;
+    font-size: 14px;
+  }
+
+  .save-btn {
+    width: 100%;
+    font-size: 14px;
+    padding: 10px;
+  }
 }

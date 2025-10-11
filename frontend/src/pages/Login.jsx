@@ -1,25 +1,24 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import API from "../utils/api"; // Import the centralized API instance
-// import Header from '../components/Header'; // Removed Header import
+import API from "../utils/api"; 
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null); // State for error messages
+  const [error, setError] = useState(null); 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null); // Clear previous errors
+    setError(null); 
     try {
       const { data } = await API.post(
-        "/users/login", // Use relative path since baseURL is set in API instance
+        "/users/login",
         { email, password },
         { headers: { "Content-Type": "application/json" } }
       );
       localStorage.setItem("userInfo", JSON.stringify(data));
-      navigate("/user-dashboard"); // Redirect to user-dashboard after successful login
+      navigate("/user-dashboard"); 
     } catch (error) {
       console.error("Login failed:", error.response.data.message);
       setError(error.response.data.message || "Login failed");
@@ -32,7 +31,7 @@ function Login() {
       <div className="relative z-10 w-full max-w-md bg-white rounded-lg shadow-xl p-8">
 
         <h1 className="text-center text-4xl font-extrabold text-gray-900 mb-6">Notes App</h1>
-        <h2 className="text-center text-2xl font-bold text-gray-800 mb-8"></h2>
+        <h2 className="text-center text-2xl font-bold text-gray-800 mb-8">Login</h2>
         
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
