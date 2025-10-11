@@ -25,6 +25,7 @@ function UserProfile() {
       const parsed = JSON.parse(raw);
       setUser(parsed);
     } catch (e) {
+      console.log(e)
       localStorage.removeItem("userInfo");
       navigate("/login");
     }
@@ -32,7 +33,7 @@ function UserProfile() {
 
   const handleLogout = () => {
     localStorage.removeItem("userInfo");
-    navigate("/login");
+    navigate("/Dashboard");
   };
 
   if (!user) return null;
