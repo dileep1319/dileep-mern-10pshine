@@ -81,14 +81,15 @@ function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
-              <div className="text-right mt-2">
-                <Link
-                  to="#"
-                  className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-all"
-                >
-                  Forgot Password?
-                </Link>
-              </div>
+            <div className="text-right mt-2">
+  <Link
+    to="/forgot-password" // updated route
+    className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-all"
+  >
+    Forgot Password?
+  </Link>
+</div>
+
             </div>
 
             <button
