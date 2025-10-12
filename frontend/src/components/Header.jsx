@@ -29,7 +29,7 @@ const Header = () => {
           className="text-2xl font-semibold tracking-tight text-gray-800 select-none flex items-center"
         >
           <span className="mr-1 text-[1.6rem]">🪶</span>
-          <span>Notes</span>
+          <span>Notes App</span>
         </Link>
 
         {/* Auth Buttons / Profile */}

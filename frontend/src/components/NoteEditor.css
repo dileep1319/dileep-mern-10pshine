@@ -7,62 +7,108 @@
   display: flex;
   flex-direction: column;
   box-shadow: 0 10px 30px rgba(17, 24, 39, 0.06);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  overflow: hidden;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Segoe UI", Roboto, sans-serif;
   position: relative;
+  overflow: hidden;
+  color: #1f2937; /* same as dashboard */
 }
 
-/* wrapper to control toolbar + editor height */
+/* Main wrapper for title + content */
 .editor-wrapper {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
-  min-height: 0; /* critical for flex children to scroll properly */
+  min-height: 0;
+  overflow-y: auto; /* ✅ this enables scrolling */
 }
 
-/* Quill toolbar adjustments */
+/* Title Input - Website typography */
+.editor-title-input {
+  font-size: 2.25rem;
+  font-weight: 600;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    "Segoe UI", Roboto, sans-serif;
+  border: none;
+  outline: none;
+  padding: 40px 30px 20px;
+  width: 100%;
+  background: transparent;
+  color: #1f2937;
+  flex-shrink: 0;
+  letter-spacing: -0.01em;
+}
+
+.editor-title-input::placeholder {
+  color: #d1d5db;
+}
+
+/* Content Area */
+.content-area {
+  display: flex;
+  align-items: flex-start;
+  padding: 0 30px 20px;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.content-icon {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #d1d5db;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #d1d5db;
+  margin-right: 12px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+/* Quill Editor Styles */
 .quill-container {
-  height: 100%;
+  flex: 1;
   display: flex;
   flex-direction: column;
   border: none !important;
+  min-height: 0;
 }
 
-/* Toolbar: sticky at the top of the editor-wrapper (not the whole page) */
 .ql-toolbar {
   border: none !important;
-  border-bottom: 1px solid #efefef !important;
-  padding: 8px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  border-bottom: 1px solid #f3f4f6 !important;
+  padding: 8px 0;
   background: #ffffff;
   position: sticky;
   top: 0;
   z-index: 10;
+  font-family: "Inter", sans-serif;
 }
 
-/* Editor area: take remaining space and scroll internally */
 .ql-container {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
   border: none !important;
-  min-height: 0; /* let it shrink inside flex container */
+  min-height: 0;
 }
 
 .ql-editor {
-  padding: 18px;
-  font-size: 15px;
-  line-height: 1.65;
-  color: #111827;
+  padding: 0;
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: #1f2937;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Segoe UI", Roboto, sans-serif;
+  font-weight: 400;
   outline: none;
   overflow-y: auto;
-  max-height: calc(72vh - 130px); /* safeguard for very tall toolbars/footers */
   box-sizing: border-box;
+  letter-spacing: -0.005em;
 }
 
-/* custom scrollbar for editor */
 .ql-editor::-webkit-scrollbar {
   width: 8px;
 }
@@ -74,8 +120,9 @@
   background: rgba(0, 0, 0, 0.18);
 }
 
-/* Footer pinned at bottom of component */
+/* Footer */
 .editor-footer {
+  flex-shrink: 0;
   display: flex;
   justify-content: flex-end;
   gap: 0.75rem;
@@ -83,9 +130,10 @@
   border-top: 1px solid #f3f4f6;
   background: #ffffff;
   z-index: 20;
+  position: sticky;
+  bottom: 0; /* ✅ footer stays pinned */
 }
 
-/* Buttons */
 .btn-cancel {
   padding: 0.5rem 1.05rem;
   border-radius: 0.65rem;
@@ -95,7 +143,10 @@
   font-weight: 600;
   transition: all 0.15s ease;
 }
-.btn-cancel:hover { background: #f9fafb; transform: translateY(-1px); }
+.btn-cancel:hover {
+  background: #f9fafb;
+  transform: translateY(-1px);
+}
 
 .btn-save {
   padding: 0.5rem 1.25rem;
@@ -105,17 +156,28 @@
   font-weight: 600;
   transition: all 0.15s ease;
 }
-.btn-save:hover { transform: translateY(-1px); }
+.btn-save:hover {
+  transform: translateY(-1px);
+}
 
-/* Responsive tweaks */
+/* Responsive */
 @media (max-width: 640px) {
   .note-editor {
     max-width: 100%;
     height: 78vh;
     border-radius: 0.85rem;
   }
-  .ql-editor {
-    max-height: calc(78vh - 120px);
+  
+  .editor-title-input {
+    font-size: 2rem;
+    padding: 30px 20px 15px;
   }
   
+  .content-area {
+    padding: 0 20px 15px;
+  }
+  
+  .ql-editor {
+    font-size: 1rem;
+  }
 }

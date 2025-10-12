@@ -27,25 +27,8 @@ function UserDashboard() {
     };
   }, [showEditor]);
 
-const handleSaveNote = async (content) => {
+const handleSaveNote = async ({ title, content }) => {
   try {
-    // Extract title from content (first line or first header)
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = content;
-    const firstElement = tempDiv.firstElementChild;
-    let title = "Untitled";
-    
-    if (firstElement) {
-      if (firstElement.tagName === 'H1' || firstElement.tagName === 'H2' || firstElement.tagName === 'H3') {
-        title = firstElement.textContent.trim() || "Untitled";
-      } else {
-        const textContent = firstElement.textContent.trim();
-        if (textContent) {
-          title = textContent.length > 50 ? textContent.substring(0, 50) + "..." : textContent;
-        }
-      }
-    }
-    
     let savedNote;
     if (editingNote) {
       savedNote = await updateNote(editingNote.id, title, content);
@@ -53,7 +36,6 @@ const handleSaveNote = async (content) => {
       savedNote = await createNote(title, content);
     }
 
-    // Automatically open the saved note in view mode
     setSelectedNote(savedNote);
     setShowEditor(false);
     setShowViewModal(true);
@@ -63,6 +45,7 @@ const handleSaveNote = async (content) => {
     alert("Failed to save note — see console for details");
   }
 };
+
 
 
 
@@ -123,7 +106,7 @@ const handleSaveNote = async (content) => {
               className="w-6 h-6 text-gray-700"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth=  "2"
               viewBox="0 0 24 24"
             >
               <path d="M4 6h16M4 12h16M4 18h16" />
@@ -173,6 +156,7 @@ const handleSaveNote = async (content) => {
   <div className="fixed inset-0 flex items-center justify-center z-50">
     <div className="w-full max-w-3xl px-4">
       <NoteEditor
+        existingTitle={editingNote ? editingNote.title : ""}
         existingContent={editingNote ? editingNote.content : ""}
         onSave={handleSaveNote}
         onCancel={() => setShowEditor(false)}
@@ -180,6 +164,7 @@ const handleSaveNote = async (content) => {
     </div>
   </div>
 )}
+
       {/* View Note Modal */}
       {showViewModal && selectedNote && (
         <NoteViewModal
