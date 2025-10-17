@@ -1,55 +1,94 @@
-import React, { useState } from 'react';
-import ReactQuill from 'react-quill-new';
-import 'react-quill-new/dist/quill.snow.css'; // Import Quill styles
-import './NoteEditor.css'; // Custom CSS for Quill
+import React, { useEffect, useRef, useState } from "react";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
+import "./NoteEditor.css";
 
-const NoteEditor = ({ existingContent = '', onSave }) => {
-  const [content, setContent] = useState(existingContent);
+const NoteEditor = ({
+  existingTitle = "",
+  existingContent = "",
+  onSave = () => {},
+  onCancel = () => {},
+}) => {
+  const [title, setTitle] = useState(existingTitle || "");
+  const [content, setContent] = useState(existingContent || "");
+  const [modules, setModules] = useState({});
+  const editorRef = useRef(null);
 
-  const handleChange = (value) => {
-    setContent(value);
-  };
+  useEffect(() => {
+    const applyModules = () => {
+      const isMobile = window.innerWidth < 640;
+      setModules({
+        toolbar: isMobile
+          ? [["bold", "italic", "underline"], [{ list: "ordered" }, { list: "bullet" }]]
+          : [
+              [{ header: [1, 2, 3, false] }],
+              ["bold", "italic", "underline"],
+              [{ list: "ordered" }, { list: "bullet" }],
+              ["link"],
+              ["clean"],
+            ],
+      });
+    };
+    applyModules();
+    window.addEventListener("resize", applyModules);
+    return () => window.removeEventListener("resize", applyModules);
+  }, []);
 
-  const handleSave = () => {
-    onSave(content);
-  };
+  useEffect(() => {
+    setTitle(existingTitle || "");
+    setContent(existingContent || "");
+  }, [existingTitle, existingContent]);
 
-  const modules = {
-    toolbar: [
-      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-      ['bold', 'italic', 'underline'],
-      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-      ['link', 'image', 'video'],
-      ['clean'],
-    ],
-  };
+  const formats = ["header", "bold", "italic", "underline", "list", "bullet", "link"];
 
-  const formats = [
-    'header',
-    'bold', 'italic', 'underline',
-    'list', 'bullet',
-    'link', 'image', 'video',
-  ];
+const handleSave = () => {
+  const contentString = typeof content === "string" ? content : JSON.stringify(content);
+
+  if (!title.trim() && (!contentString || contentString.trim() === "" || contentString === "<p><br></p>")) {
+    alert("Cannot save an empty note.");
+    return;
+  }
+
+  onSave({ title: title.trim() || "Untitled", content: contentString });
+};
+
 
   return (
-    <div className="note-editor bg-white rounded-lg shadow-md p-4">
-      <ReactQuill
-        value={content}
-        onChange={handleChange}
-        modules={modules}
-        formats={formats}
-        theme="snow"
-        className="h-64 mb-12"
-      />
-      <div className="flex justify-end">
-  <button
-    onClick={handleSave}
-    className="mt-4 px-6 py-2 bg-black text-white font-medium rounded-md transform transition-transform duration-200 hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-  >
-    Save Note
-  </button>
-</div>
+    <div className="note-editor">
+      <div className="editor-wrapper">
+        {/* Title Input */}
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Title"
+          className="editor-title-input"
+        />
 
+        {/* Content Area with Plus Icon */}
+        <div className="content-area">
+          <div className="quill-container">
+            <ReactQuill
+              ref={editorRef}
+              value={content}
+              onChange={setContent}
+              modules={modules}
+              formats={formats}
+              theme="snow"
+              placeholder="Tell your story..."
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="editor-footer">
+        <button onClick={onCancel} className="btn-cancel">
+          Cancel
+        </button>
+        <button onClick={handleSave} className="btn-save">
+          Save
+        </button>
+      </div>
     </div>
   );
 };

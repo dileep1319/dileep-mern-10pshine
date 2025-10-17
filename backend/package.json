@@ -17,7 +17,8 @@
     "express": "^5.1.0",
     "express-async-handler": "^1.2.0",
     "jsonwebtoken": "^9.0.2",
-    "sequelize": "^6.37.3",
-    "pg": "^8.11.5"
+    "nodemailer": "^7.0.9",
+    "pg": "^8.11.5",
+    "sequelize": "^6.37.3"
   }
 }

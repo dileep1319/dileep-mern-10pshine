@@ -3,51 +3,70 @@ import { Link, useNavigate } from "react-router-dom";
 
 const Header = () => {
   const navigate = useNavigate();
-  const userInfo = localStorage.getItem("userInfo");
+  const rawUser = localStorage.getItem("userInfo");
+  const user = rawUser ? JSON.parse(rawUser) : null;
+
+  const stringToColor = (str) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const hue = hash % 360;
+    return `hsl(${hue}, 70%, 55%)`;
+  };
 
   return (
-    <header className="sticky top-0 z-50 w-full px-4 py-2 bg-white border-b border-gray-200 shadow-sm">
-      <nav className="container mx-auto flex items-center justify-between h-14">
-        {/* Logo */}
-        <Link to="/" className="text-xl font-bold text-black">
-          Notes App
+    <header
+      className="sticky top-0 z-50 w-full
+      bg-[#faf9f8]/80 backdrop-blur-xl 
+      border-b border-white/30 shadow-sm
+      transition-colors duration-300"
+    >
+      <nav className="max-w-7xl mx-auto flex items-center justify-between h-16 px-6 sm:px-10">
+        {/* Logo / Brand */}
+        <Link
+          to="/"
+          className="text-2xl font-semibold tracking-tight text-gray-800 select-none flex items-center"
+        >
+          <span className="mr-1 text-[1.6rem]">🪶</span>
+          <span>Notes App</span>
         </Link>
 
-        {/* Right side */}
-        {!userInfo ? (
-          <div className="flex space-x-2">
+        {/* Auth Buttons / Profile */}
+        {!user ? (
+          <div className="flex space-x-3">
             <Link
               to="/login"
-              className="px-3 py-1.5 rounded-md text-sm font-medium text-white bg-black hover:bg-gray-800 transition-colors"
+              className="px-4 py-1.5 text-sm font-medium bg-white/60 
+              text-gray-800 rounded-xl border border-gray-200/60 
+              hover:bg-white hover:shadow-sm transition-all duration-200"
             >
               Login
             </Link>
             <Link
               to="/signup"
-              className="px-3 py-1.5 rounded-md text-sm font-medium text-white bg-black hover:bg-gray-800 transition-colors"
+              className="px-4 py-1.5 text-sm font-medium bg-gray-900 
+              text-white rounded-xl hover:bg-gray-800 transition-all duration-200"
             >
               Signup
             </Link>
           </div>
         ) : (
-          <div className="flex items-center">
-            <button
-              onClick={() => navigate("/profile")}
-              className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
-              aria-label="Open profile"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-8 h-8"
-                viewBox="0 0 24 24"
-                fill="black"
-              >
-                <circle cx="12" cy="12" r="12" />
-                <path d="M12 7a3 3 0 110 6 3 3 0 010-6z" fill="white" />
-                <path d="M6 18c0-2.5 3-4 6-4s6 1.5 6 4" fill="white" />
-              </svg>
-            </button>
-          </div>
+          <button
+            onClick={() => navigate("/profile")}
+            className="w-10 h-10 rounded-full flex items-center justify-center 
+            shadow-sm hover:scale-105 active:scale-95 transition-transform duration-200"
+            title={user.name || "User"}
+            style={{
+              background: `linear-gradient(135deg, ${stringToColor(
+                user.name || "User"
+              )}, ${stringToColor(user.email || "example")})`,
+            }}
+          >
+            <span className="text-white font-semibold text-lg">
+              {user.name ? user.name[0].toUpperCase() : "U"}
+            </span>
+          </button>
         )}
       </nav>
     </header>
