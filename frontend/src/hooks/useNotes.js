@@ -15,40 +15,78 @@ export const useNotes = () => {
     return userInfo.token;
   };
 
-  const fetchNotes = async () => {
+  //Fetch all notes (optionally with ?search=)
+  const fetchNotes = async (search = "") => {
     const token = getToken();
     if (!token) return;
+
     try {
-      const { data } = await API.get("/notes", {
+      const endpoint = search
+        ? `/notes?search=${encodeURIComponent(search)}`
+        : "/notes";
+
+      const { data } = await API.get(endpoint, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
       setNotes(data);
+      return data;
     } catch (error) {
-      console.error("Failed to fetch notes:", error.response?.data?.message || error);
+      console.error(
+        "Failed to fetch notes:",
+        error.response?.data?.message || error
+      );
+      return [];
     }
   };
 
+  // Dedicated backend search (uses /notes/search?query=)
+  const searchNotes = async (query) => {
+    const token = getToken();
+    if (!token) return [];
+    try {
+      const { data } = await API.get(
+        `/notes/search?query=${encodeURIComponent(query)}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      return data;
+    } catch (error) {
+      console.error(
+        "Error searching notes:",
+        error.response?.data?.message || error
+      );
+      return [];
+    }
+  };
+
+  // Create
   const createNote = async (title, content) => {
     const token = getToken();
     if (!token) return;
+
     try {
       const { data } = await API.post(
         "/notes/create-note",
         { title, content },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setNotes((prev) => [...prev, data.note]);
-      return data.note; // Return the created note
+      setNotes((prev) => [data.note, ...prev]);
+      return data.note;
     } catch (error) {
-      console.error("Error creating note:", error.response?.data?.message || error);
+      console.error(
+        "Error creating note:",
+        error.response?.data?.message || error
+      );
       alert("Failed to create note");
-      throw error; // Re-throw to handle in component
+      throw error;
     }
   };
 
+  // Update
   const updateNote = async (id, title, content) => {
     const token = getToken();
     if (!token) return;
+
     try {
       const { data } = await API.put(
         `/notes/${id}`,
@@ -56,31 +94,47 @@ export const useNotes = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setNotes((prev) => prev.map((note) => (note.id === id ? data : note)));
-      return data; // Return the updated note
+      return data;
     } catch (error) {
-      console.error("Error updating note:", error.response?.data?.message || error);
+      console.error(
+        "Error updating note:",
+        error.response?.data?.message || error
+      );
       alert("Failed to update note");
-      throw error; // Re-throw to handle in component
+      throw error;
     }
   };
 
+  // Delete
   const deleteNote = async (id) => {
     const token = getToken();
     if (!token) return;
+
     try {
       await API.delete(`/notes/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setNotes((prev) => prev.filter((note) => note.id !== id));
     } catch (error) {
-      console.error("Error deleting note:", error.response?.data?.message || error);
+      console.error(
+        "Error deleting note:",
+        error.response?.data?.message || error
+      );
       alert("Failed to delete note");
     }
   };
 
+  // Fetch notes on mount
   useEffect(() => {
     fetchNotes();
   }, []);
 
-  return { notes, createNote, updateNote, deleteNote };
+  return {
+    notes,
+    fetchNotes,
+    createNote,
+    updateNote,
+    deleteNote,
+    searchNotes,
+  };
 };
