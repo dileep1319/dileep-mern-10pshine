@@ -1,17 +1,26 @@
 const express = require("express");
 const router = express.Router();
-const { createNote, getUserNotes, updateNote, deleteNote } = require("../controllers/noteController");
-
+const {
+  createNote,
+  getUserNotes,
+  updateNote,
+  deleteNote,
+  searchNotes,
+} = require("../controllers/noteController");
 const { protect } = require("../middleware/authMiddleware");
 
-// POST -> /api/notes/create-note (Protected)
+// 🟢 Create
 router.post("/create-note", protect, createNote);
 
-// GET -> /api/notes (Protected)
+// 🟢 Search (keep before /:id to avoid conflict)
+router.get("/search", protect, searchNotes);
+
+// 🟢 Get all
 router.get("/", protect, getUserNotes);
 
+// 🟢 Update / Delete
 router.put("/:id", protect, updateNote);
 router.delete("/:id", protect, deleteNote);
 
-
 module.exports = router;
+
