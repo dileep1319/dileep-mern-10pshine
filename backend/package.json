@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "test": "mocha --timeout 10000"
+  "test": "mocha --timeout 10000 test/**/*.js",
+  "coverage": "nyc --reporter=lcov --reporter=text npm test"
+
   },
   "keywords": [],
   "author": "",
@@ -27,7 +29,9 @@
   "devDependencies": {
     "chai": "^6.2.0",
     "mocha": "^11.7.4",
+    "nyc": "^17.1.0",
     "sinon": "^21.0.0",
+    "sonar-scanner": "^3.1.0",
     "supertest": "^7.1.4",
     "uuid": "^13.0.0"
   }

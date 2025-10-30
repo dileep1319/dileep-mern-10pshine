@@ -77,3 +77,35 @@
   overflow: hidden;
 }
 
+
+/* ✅ Fix Quill-rendered lists */
+.note-preview ul,
+.note-preview ol,
+.note-content ul,
+.note-content ol {
+  margin: 0.5rem 1.25rem;
+  padding-left: 1.5rem;
+}
+
+.note-preview ul,
+.note-content ul {
+  list-style-type: disc;
+}
+
+.note-preview ol,
+.note-content ol {
+  list-style-type: decimal;
+}
+
+.note-preview li,
+.note-content li {
+  margin: 0.25rem 0;
+}
+
+/* Optional: keep consistent typography */
+.note-preview p,
+.note-content p,
+.note-preview li,
+.note-content li {
+  line-height: 1.6;
+}

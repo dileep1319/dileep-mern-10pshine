@@ -8,7 +8,9 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "jest --watchAll"
+    "test": "jest --watchAll",
+    "test:coverage": "jest --coverage",
+    "sonar": "dotenv -e .env -- npx sonar-scanner -Dsonar.login=sqp_0bfe2a9c231634970e273171018a8d58f0d3f5b5"
   },
   "dependencies": {
     "axios": "^1.12.2",
@@ -33,6 +35,7 @@
     "@vitejs/plugin-react-swc": "^4.1.0",
     "autoprefixer": "^10.4.21",
     "babel-jest": "^30.2.0",
+    "dotenv-cli": "^10.0.0",
     "eslint": "^9.36.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
@@ -46,7 +49,9 @@
   },
   "jest": {
     "testEnvironment": "jsdom",
-    "setupFilesAfterEnv": ["<rootDir>/src/setupTests.js"],
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/setupTests.js"
+    ],
     "transform": {
       "^.+\\.[tj]sx?$": "babel-jest"
     },

@@ -70,6 +70,25 @@ function UserDashboard({ darkMode, setDarkMode }) {
     localStorage.removeItem("userInfo");
     navigate("/Dashboard");
   };
+  useEffect(() => {
+  const userInfo = localStorage.getItem("userInfo");
+  if (!userInfo) {
+    navigate("/login");
+    return;
+  }
+
+  const parsed = JSON.parse(userInfo);
+  const token = parsed.token;
+  if (token?.includes(".")) {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    if (payload.exp && Date.now() >= payload.exp * 1000) {
+      console.warn("Token expired, redirecting...");
+      localStorage.removeItem("userInfo");
+      navigate("/login");
+    }
+  }
+}, [navigate]);
+
 
   // Live + backend search
   const handleSearch = async (query, isFinal) => {

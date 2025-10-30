@@ -68,13 +68,14 @@ function NoteViewModal({ note, onClose, onEdit, onDelete, darkMode }) {
           </div>
 
           {/* Content */}
-          <div
-            className={`leading-relaxed whitespace-pre-wrap text-[1.05rem] sm:text-[1.1rem] tracking-wide font-[SF Pro Text,Inter,sans-serif]
-            selection:bg-yellow-200/40 ${
-              darkMode ? "text-gray-200" : "text-gray-800"
-            }`}
-            dangerouslySetInnerHTML={{ __html: note.content }}
-          ></div>
+     <div
+  className={`note-content leading-relaxed whitespace-pre-wrap text-[1.05rem] sm:text-[1.1rem] tracking-wide font-[SF Pro Text,Inter,sans-serif]
+  selection:bg-yellow-200/40 ${
+    darkMode ? "text-gray-200" : "text-gray-800"
+  }`}
+  dangerouslySetInnerHTML={{ __html: note.content }}
+></div>
+
 
           {/* Footer */}
           <div
