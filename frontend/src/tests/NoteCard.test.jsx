@@ -6,7 +6,8 @@ describe("NoteCard component", () => {
   const note = {
     id: "1",
     title: "Test Note",
-    content: "<p>This is a test note content with some <strong>HTML</strong> tags.</p>",
+    content:
+      "<p>This is a test note content with some <strong>HTML</strong> tags.</p>",
     createdAt: "2025-10-01T10:00:00Z",
     updatedAt: "2025-10-02T12:00:00Z",
   };
@@ -24,7 +25,9 @@ describe("NoteCard component", () => {
 
   test("renders preview text from HTML content", () => {
     render(<NoteCard note={note} onViewNote={() => {}} />);
-    expect(screen.getByText(/This is a test note content/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/This is a test note content/i)
+    ).toBeInTheDocument();
   });
 
   test("renders 'No content' if content is missing", () => {
@@ -48,5 +51,19 @@ describe("NoteCard component", () => {
     const card = screen.getByText("Test Note").closest("div");
     fireEvent.click(card);
     expect(handleView).toHaveBeenCalledWith(note);
+  });
+
+  test("highlights search query text correctly", () => {
+    render(
+      <NoteCard note={note} onViewNote={() => {}} searchQuery="test" />
+    );
+    const highlighted = screen.getAllByText(/test/i)[0];
+    expect(highlighted.tagName).toBe("MARK");
+  });
+
+  test("renders with darkMode styling", () => {
+    render(<NoteCard note={note} onViewNote={() => {}} darkMode />);
+    const card = screen.getByText("Test Note").closest("div");
+    expect(card).toHaveClass("bg-gray-900/90");
   });
 });

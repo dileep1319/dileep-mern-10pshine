@@ -160,6 +160,29 @@
   transform: translateY(-1px);
 }
 
+/* ✅ Ensure lists show bullets/numbers properly everywhere */
+.note-preview ul {
+  list-style-type: disc;
+  margin-left: 1.25rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  padding-left: 1.25rem;
+}
+
+.note-preview ol {
+  list-style-type: decimal;
+  margin-left: 1.25rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  padding-left: 1.25rem;
+}
+
+.note-preview li {
+  margin-bottom: 0.25rem;
+  line-height: 1.6;
+}
+
+
 /* Responsive */
 @media (max-width: 640px) {
   .note-editor {

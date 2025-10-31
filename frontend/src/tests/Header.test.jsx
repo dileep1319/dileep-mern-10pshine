@@ -1,8 +1,9 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, act } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import Header from "../components/Header";
 
-// Mock useNavigate
+// Mock navigate
 const mockedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -10,7 +11,7 @@ jest.mock("react-router-dom", () => ({
   Link: ({ children, to }) => <a href={to}>{children}</a>,
 }));
 
-// Mock localStorage BEFORE importing Header
+// Setup mock localStorage
 const user = { name: "John Doe", email: "john@example.com" };
 beforeAll(() => {
   Object.defineProperty(window, "localStorage", {
@@ -22,17 +23,21 @@ beforeAll(() => {
     },
     writable: true,
   });
+  jest.useFakeTimers(); // for debounce
 });
 
-import Header from "../components/Header";
+afterAll(() => {
+  jest.useRealTimers();
+});
 
-describe("Header component", () => {
+describe("Header Component", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   test("renders login and signup links when no user in localStorage", () => {
     window.localStorage.getItem.mockReturnValue(null);
+
     render(
       <MemoryRouter>
         <Header />
@@ -45,6 +50,7 @@ describe("Header component", () => {
 
   test("renders user profile button when user is in localStorage", () => {
     window.localStorage.getItem.mockReturnValue(JSON.stringify(user));
+
     render(
       <MemoryRouter>
         <Header />
@@ -59,7 +65,7 @@ describe("Header component", () => {
     expect(mockedNavigate).toHaveBeenCalledWith("/profile");
   });
 
-  test("renders default User if name is missing", () => {
+  test("renders default User avatar when name missing", () => {
     const noNameUser = { email: "user@example.com" };
     window.localStorage.getItem.mockReturnValue(JSON.stringify(noNameUser));
 
@@ -73,6 +79,55 @@ describe("Header component", () => {
     expect(profileButton).toBeInTheDocument();
     expect(profileButton.textContent).toBe("U");
   });
+
+  test("calls onSearch with debounce when typing", () => {
+    const onSearchMock = jest.fn();
+    window.localStorage.getItem.mockReturnValue(JSON.stringify(user));
+
+    render(
+      <MemoryRouter>
+        <Header onSearch={onSearchMock} />
+      </MemoryRouter>
+    );
+
+    const input = screen.getAllByPlaceholderText("Search notes...")[0];
+    fireEvent.change(input, { target: { value: "hello" } });
+
+    // Debounce delay
+    act(() => {
+      jest.advanceTimersByTime(400);
+    });
+
+    expect(onSearchMock).toHaveBeenCalledWith("hello", false);
+  });
+
+  test("calls onSearch immediately on Enter key", () => {
+    const onSearchMock = jest.fn();
+    window.localStorage.getItem.mockReturnValue(JSON.stringify(user));
+
+    render(
+      <MemoryRouter>
+        <Header onSearch={onSearchMock} />
+      </MemoryRouter>
+    );
+
+    const input = screen.getAllByPlaceholderText("Search notes...")[0];
+    fireEvent.change(input, { target: { value: "quick search" } });
+    fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+
+    expect(onSearchMock).toHaveBeenCalledWith("quick search", true);
+  });
+
+  test("renders correctly in dark mode", () => {
+    window.localStorage.getItem.mockReturnValue(JSON.stringify(user));
+
+    render(
+      <MemoryRouter>
+        <Header darkMode={true} />
+      </MemoryRouter>
+    );
+
+    const header = screen.getByRole("banner");
+    expect(header).toHaveClass("bg-black/80");
+  });
 });
-
-

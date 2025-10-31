@@ -1,14 +1,6 @@
 import React from "react";
 
 const NoteCard = ({ note, onViewNote, darkMode, searchQuery }) => {
-  const getPreviewText = (htmlContent) => {
-    if (!htmlContent) return "No content";
-    const tempDiv = document.createElement("div");
-    tempDiv.innerHTML = htmlContent;
-    const text = tempDiv.textContent || tempDiv.innerText || "";
-    return text.length > 100 ? text.substring(0, 100) + "..." : text;
-  };
-
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -18,30 +10,21 @@ const NoteCard = ({ note, onViewNote, darkMode, searchQuery }) => {
     });
   };
 
-  // Highlight matched words
-  const highlightText = (text, query) => {
-    if (!query) return text;
+  // Highlight matched search query (works for HTML)
+  const highlightHTML = (html, query) => {
+    if (!query) return html;
     const regex = new RegExp(`(${query})`, "gi");
-    const parts = text.split(regex);
-    return parts.map((part, i) =>
-      regex.test(part) ? (
-        <mark
-          key={i}
-          className={`px-1 rounded ${
-            darkMode
-              ? "bg-yellow-600/60 text-white"
-              : "bg-yellow-200 text-gray-900"
-          }`}
-        >
-          {part}
-        </mark>
-      ) : (
-        part
-      )
+    return html.replace(
+      regex,
+      (match) =>
+        `<mark style="background-color:${
+          darkMode ? "#b58900" : "#fff176"
+        };border-radius:4px;padding:0 2px;">${match}</mark>`
     );
   };
 
-  const preview = getPreviewText(note.content);
+  // ✅ Render content directly (keep lists, bold, underline)
+  const previewHTML = highlightHTML(note.content || "<p>No content</p>", searchQuery);
 
   return (
     <div
@@ -53,16 +36,20 @@ const NoteCard = ({ note, onViewNote, darkMode, searchQuery }) => {
       } hover:shadow-lg`}
     >
       <h3 className="text-lg font-semibold mb-3 line-clamp-2">
-        {highlightText(note.title || "Untitled", searchQuery)}
+        <span
+          dangerouslySetInnerHTML={{
+            __html: highlightHTML(note.title || "Untitled", searchQuery),
+          }}
+        />
       </h3>
 
-      <p
-        className={`text-sm mb-4 line-clamp-3 ${
-          darkMode ? "text-gray-300" : "text-gray-600"
+      {/* ✅ Only show short preview */}
+      <div
+        className={`note-preview text-sm mb-4 line-clamp-3 ${
+          darkMode ? "text-gray-300" : "text-gray-700"
         }`}
-      >
-        {highlightText(preview, searchQuery)}
-      </p>
+        dangerouslySetInnerHTML={{ __html: previewHTML }}
+      ></div>
 
       <div
         className={`flex items-center justify-between text-xs ${

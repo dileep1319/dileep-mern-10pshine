@@ -21,7 +21,6 @@ const NoteEditor = ({
         toolbar: isMobile
           ? [["bold", "italic", "underline"], [{ list: "ordered" }, { list: "bullet" }]]
           : [
-              [{ header: [1, 2, 3, false] }],
               ["bold", "italic", "underline"],
               [{ list: "ordered" }, { list: "bullet" }],
               ["link"],
@@ -39,24 +38,28 @@ const NoteEditor = ({
     setContent(existingContent || "");
   }, [existingTitle, existingContent]);
 
-  const formats = ["header", "bold", "italic", "underline", "list", "bullet", "link"];
+  const formats = ["bold", "italic", "underline", "list", "bullet", "link"];
 
-const handleSave = () => {
-  const contentString = typeof content === "string" ? content : JSON.stringify(content);
+  const handleSave = () => {
+    const contentString =
+      typeof content === "string" ? content : JSON.stringify(content);
 
-  if (!title.trim() && (!contentString || contentString.trim() === "" || contentString === "<p><br></p>")) {
-    alert("Cannot save an empty note.");
-    return;
-  }
+    if (
+      !title.trim() &&
+      (!contentString ||
+        contentString.trim() === "" ||
+        contentString === "<p><br></p>")
+    ) {
+      alert("Cannot save an empty note.");
+      return;
+    }
 
-  onSave({ title: title.trim() || "Untitled", content: contentString });
-};
-
+    onSave({ title: title.trim() || "Untitled", content: contentString });
+  };
 
   return (
     <div className="note-editor">
       <div className="editor-wrapper">
-        {/* Title Input */}
         <input
           type="text"
           value={title}
@@ -65,7 +68,6 @@ const handleSave = () => {
           className="editor-title-input"
         />
 
-        {/* Content Area with Plus Icon */}
         <div className="content-area">
           <div className="quill-container">
             <ReactQuill
@@ -75,7 +77,7 @@ const handleSave = () => {
               modules={modules}
               formats={formats}
               theme="snow"
-              placeholder="Tell your story..."
+              placeholder="Write something..."
             />
           </div>
         </div>

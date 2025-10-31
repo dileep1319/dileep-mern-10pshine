@@ -4,3 +4,10 @@ frontend/.env
 frontend/node_modules
 
 
+backend/.nyc_output/
+backend/coverage/
+backend/.scannerwork/
+
+frontend/.nyc_output/
+frontend/coverage/
+frontend/.scannerwork/

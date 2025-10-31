@@ -1,23 +1,52 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Header from '../components/Header';
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import Header from "../components/Header";
 
 function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userInfo = localStorage.getItem('userInfo');
-    if (userInfo) {
-      navigate('/user-dashboard');
+    try {
+      const userInfo = localStorage.getItem("userInfo");
+
+      if (!userInfo) {
+        navigate("/login");
+        return;
+      }
+
+      const parsed = JSON.parse(userInfo);
+      const token = parsed.token;
+      // Check if token is in JWT format (has 3 parts)
+      if (token?.includes(".")) {
+        const payloadBase64 = token.split(".")[1];
+        const payload = JSON.parse(atob(payloadBase64));
+
+        // Check expiry
+        if (payload.exp && Date.now() >= payload.exp * 1000) {
+          console.warn("Token expired, logging out");
+          localStorage.removeItem("userInfo");
+          navigate("/login");
+        } else {
+          navigate("/user-dashboard");
+        }
+      } else {
+        // Non-JWT tokens (like test tokens or dev mode)
+        console.warn("Non-JWT token detected, skipping decode");
+        navigate("/user-dashboard");
+      }
+    } catch (err) {
+      console.error("Invalid token, logging out:", err);
+      localStorage.removeItem("userInfo");
+      navigate("/login");
     }
   }, [navigate]);
 
   const handleTakeNotesClick = () => {
-    const userInfo = localStorage.getItem('userInfo');
+    const userInfo = localStorage.getItem("userInfo");
     if (userInfo) {
-      navigate('/user-dashboard');
+      navigate("/user-dashboard");
     } else {
-      navigate('/login');
+      navigate("/login");
     }
   };
 
@@ -31,7 +60,7 @@ function Dashboard() {
       <main className="relative z-10 flex flex-col items-center justify-center min-h-[calc(100vh-64px)] px-6 text-center">
         <div className="backdrop-blur-2xl bg-white/40 border border-white/30 shadow-sm rounded-3xl p-14 sm:p-16 animate-fade-in-down max-w-3xl">
           <h1 className="text-[3rem] sm:text-[4rem] lg:text-[4.5rem] font-semibold tracking-tight text-gray-900 leading-tight mb-6">
-            Capture ideas.  
+            Capture ideas.
             <br className="hidden sm:block" />
             Create brilliance.
           </h1>
@@ -53,7 +82,11 @@ function Dashboard() {
               strokeWidth="2"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 5l7 7-7 7"
+              />
             </svg>
           </button>
         </div>

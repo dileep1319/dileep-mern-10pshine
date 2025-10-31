@@ -1,12 +1,14 @@
 const asyncHandler = require("express-async-handler");
 const { Op } = require("sequelize");
 const Note = require("../models/Note");
+const logger = require("../utils/logger"); // ✅ import Pino logger
 
 // 🟢 Create Note
 exports.createNote = asyncHandler(async (req, res) => {
   const { title, content } = req.body;
 
   if (!title || !content) {
+    logger.warn("Create note failed: Missing title or content");
     return res.status(400).json({ message: "All fields are required." });
   }
 
@@ -16,6 +18,7 @@ exports.createNote = asyncHandler(async (req, res) => {
     content,
   });
 
+  logger.info({ userId: req.user.id, noteId: note.id }, "Note created successfully");
   res.status(201).json({ message: "Note created successfully", note });
 });
 
@@ -25,10 +28,7 @@ exports.getUserNotes = asyncHandler(async (req, res) => {
   const where = { userId: req.user.id };
 
   if (search && search.trim()) {
-    // Split search query into words
     const terms = search.trim().split(/\s+/);
-
-    // Match notes that contain all terms (in title or content)
     where[Op.and] = terms.map((term) => ({
       [Op.or]: [
         { title: { [Op.iLike]: `%${term}%` } },
@@ -42,18 +42,20 @@ exports.getUserNotes = asyncHandler(async (req, res) => {
     order: [["updatedAt", "DESC"]],
   });
 
+  logger.info({ userId: req.user.id, notesCount: notes.length }, "Fetched user notes");
   res.status(200).json(notes);
 });
 
-// 🟢 Dedicated Search Endpoint (same smart logic)
+// 🟢 Dedicated Search Endpoint
 exports.searchNotes = asyncHandler(async (req, res) => {
   const query = req.query.query?.trim();
-  if (!query) return res.json([]);
+  if (!query) {
+    logger.warn("Search attempted with empty query");
+    return res.json([]);
+  }
 
-  // Split into individual terms
   const terms = query.split(/\s+/);
 
-  // Match notes containing *any* of the words in title or content
   const notes = await Note.findAll({
     where: {
       userId: req.user.id,
@@ -77,6 +79,7 @@ exports.searchNotes = asyncHandler(async (req, res) => {
     order: [["updatedAt", "DESC"]],
   });
 
+  logger.info({ userId: req.user.id, query, resultCount: notes.length }, "Search completed");
   res.status(200).json(notes);
 });
 
@@ -87,6 +90,7 @@ exports.updateNote = asyncHandler(async (req, res) => {
 
   const note = await Note.findOne({ where: { id, userId: req.user.id } });
   if (!note) {
+    logger.error({ noteId: id, userId: req.user.id }, "Note not found or unauthorized update attempt");
     res.status(404);
     throw new Error("Note not found or not authorized");
   }
@@ -95,6 +99,7 @@ exports.updateNote = asyncHandler(async (req, res) => {
   note.content = content || note.content;
   await note.save();
 
+  logger.info({ noteId: id, userId: req.user.id }, "Note updated successfully");
   res.json(note);
 });
 
@@ -104,10 +109,12 @@ exports.deleteNote = asyncHandler(async (req, res) => {
 
   const note = await Note.findOne({ where: { id, userId: req.user.id } });
   if (!note) {
+    logger.error({ noteId: id, userId: req.user.id }, "Note not found or unauthorized delete attempt");
     res.status(404);
     throw new Error("Note not found or not authorized");
   }
 
   await note.destroy();
+  logger.info({ noteId: id, userId: req.user.id }, "Note deleted successfully");
   res.json({ message: "Note deleted successfully" });
 });
