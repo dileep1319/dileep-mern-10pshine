@@ -125,9 +125,12 @@ export const useNotes = () => {
   };
 
   // Fetch notes on mount
-  useEffect(() => {
+useEffect(() => {
+  if (notes.length === 0) {
     fetchNotes();
-  }, []);
+  }
+}, [notes.length]);
+
 
   return {
     notes,
